@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "740627484866",
+    "firebase_url": "https://electroniccard-f0e65.firebaseio.com",
+    "project_id": "electroniccard-f0e65",
+    "storage_bucket": "electroniccard-f0e65.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740627484866:android:c8b8419808581dd4eb2b5b",
+        "android_client_info": {
+          "package_name": "com.example.electronic_card"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "740627484866-821mtploq1t1fdppqevpucj7hlndh7iq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBU3ik5OICwzB2FBRc6o7K2A3n5heU-roA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740627484866-821mtploq1t1fdppqevpucj7hlndh7iq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
