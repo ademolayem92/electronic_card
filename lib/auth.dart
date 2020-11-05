@@ -3,37 +3,50 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class BaseAuth {
-  Future<String> signInWithEmailAndPassword(String email, String password);
-  Future<String> signUp(String email, String password);
-
-  Future<String> currentUser();
+  signInWithEmailAndPassword(String email, String password);
+  signUp(String email, String password);
+  currentUser();
+  Future<void> signOut();
 }
 
 class Auth implements BaseAuth {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User user = FirebaseAuth.instance.currentUser;
 
-  Future<String> signInWithEmailAndPassword(
-      String email, String password) async {
-    FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password) as FirebaseUser;
-    return user.uid;
+  signInWithEmailAndPassword(String email, String password) async {
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    _auth.authStateChanges().listen((User user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+
+    return userCredential;
   }
 
-  @override
-  Future<String> signUp(String email, String password) async {
-    FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password) as FirebaseUser;
-    try {
+  signUp(String email, String password) async {
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    if (!user.emailVerified) {
       await user.sendEmailVerification();
-    } catch (e) {
-      print("An error occurred while trying to send email verification");
-      print(e.message);
     }
-    return user.uid;
+    return userCredential;
   }
 
-  Future<String> currentUser() async {
-    FirebaseUser user = _firebaseAuth.currentUser as FirebaseUser;
-    return user.uid;
+  currentUser() async {
+    User userCredential = _auth.currentUser;
+    if (_auth.currentUser != null) {
+      print(_auth.currentUser.uid);
+    }
+    return userCredential;
+  }
+
+  Future<void> signOut() async {
+    return _auth.signOut();
   }
 }

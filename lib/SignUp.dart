@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'Login_page.dart';
@@ -22,13 +23,14 @@ final TextEditingController _controller2 = TextEditingController();
 final FocusNode _focusNode2 = FocusNode(canRequestFocus: true);
 
 enum FormType {
-  login,
   register,
 }
 
 class _SignUpState extends State<SignUp> {
   final formKey = GlobalKey<FormState>();
+  FirebaseAuth auth = FirebaseAuth.instance;
 
+  String code = '*******';
   String _email;
   String _password;
   FormType _formType = FormType.register;
@@ -49,9 +51,15 @@ class _SignUpState extends State<SignUp> {
         if (_formType == FormType.register) {
           String userId = await widget.auth.signUp(_email, _password);
           print('Registered user: $userId');
+          await auth.checkActionCode(code);
+          await auth.applyActionCode(code);
         }
-      } catch (e) {
-        print('Error: $e');
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          print('No user found for that email.');
+        } else if (e.code == 'wrong-password') {
+          print('Wrong password provided for that user.');
+        }
       }
     }
   }
@@ -74,8 +82,8 @@ class _SignUpState extends State<SignUp> {
     if (value.isEmpty) {
       return 'Please enter password';
     } else {
-      if (!regex.hasMatch(value) || !(value.length <= 8))
-        return '8 at least 1 upper case, lowercase, numbers and characters';
+      if (!regex.hasMatch(value) || !(value.length <= 6))
+        return '6 at least 1 upper case, lowercase, numbers and characters';
       else
         return null;
     }
@@ -94,13 +102,6 @@ class _SignUpState extends State<SignUp> {
       else
         return null;
     }
-  }
-
-  void moveToLogin() {
-    formKey.currentState.reset();
-    setState(() {
-      _formType = FormType.login;
-    });
   }
 
   @override

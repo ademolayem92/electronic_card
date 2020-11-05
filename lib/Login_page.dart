@@ -1,8 +1,11 @@
 import 'dart:core';
 
+import 'package:electronic_card/Home_Page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+
 import 'SignUp.dart';
 import 'auth.dart';
 
@@ -10,6 +13,7 @@ class LoginPage extends StatefulWidget {
   LoginPage({this.auth, this.onSignedIn});
   final BaseAuth auth;
   final VoidCallback onSignedIn;
+  //final User user;
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -21,13 +25,16 @@ final FocusNode _focusNodeTwo = FocusNode(canRequestFocus: true);
 
 enum FormType {
   login,
-  register,
 }
 
 class _LoginPageState extends State<LoginPage> {
+  var user;
+
   Future navigateToSignUp(context) async {
     Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()));
   }
+
+  //Future navigateToRootPage(context) async {}
 
   ///Future navigateToForgottenPassword(context) async{
   /// Navigator.push(context, MaterialPageRoute(builder: (context)=>
@@ -55,21 +62,19 @@ class _LoginPageState extends State<LoginPage> {
         if (_formType == FormType.login) {
           String userId =
               await widget.auth.signInWithEmailAndPassword(_email, _password);
-
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => HomePage(user: user)));
           print('Signed in: $userId');
         }
         widget.onSignedIn();
-      } catch (e) {
-        print('Error: $e');
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          print('No user found for that email.');
+        } else if (e.code == 'wrong-password') {
+          print('Wrong password provided for that user.');
+        }
       }
     }
-  }
-
-  void moveToRegistration() {
-    formKey.currentState.reset();
-    setState(() {
-      _formType = FormType.register;
-    });
   }
 
   @override
@@ -185,8 +190,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       textAlign: TextAlign.start,
                       validator: (value) {
-                        if (!(value.length == 14) || value.isEmpty) {
-                          return 'wrong password';
+                        if (!(value.length == 6) || value.isEmpty) {
+                          return 'check your password';
                         }
                         return null;
                       },
@@ -207,7 +212,9 @@ class _LoginPageState extends State<LoginPage> {
                       side: BorderSide(color: Colors.blue),
                     ),
                     color: Colors.blue,
-                    onPressed: validateAndSubmit,
+                    onPressed: () {
+                      validateAndSubmit();
+                    },
                     child: Text(
                       'Sign In',
                       style: TextStyle(fontSize: 15, color: Colors.white),
