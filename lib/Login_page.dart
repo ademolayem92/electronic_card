@@ -1,6 +1,5 @@
 import 'dart:core';
 
-import 'package:electronic_card/Home_Page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +59,10 @@ class _LoginPageState extends State<LoginPage> {
     if (validateAndSave()) {
       try {
         if (_formType == FormType.login) {
-          String userId =
+          UserCredential userId =
               await widget.auth.signInWithEmailAndPassword(_email, _password);
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => HomePage(user: user)));
+          //Navigator.push(context,
+          // MaterialPageRoute(builder: (context) => HomePage(user: user)));
           print('Signed in: $userId');
         }
         widget.onSignedIn();
@@ -149,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                             //prefixIcon: used to put icon like email icon before the text.
                             hintText: 'Email',
                             prefixIcon: Icon(Icons.email)),
-                        autovalidate: false,
+                        autovalidateMode: AutovalidateMode.disabled,
                         onSaved: (value) => _email = value,
                         validator: (value) =>
                             value.isEmpty ? 'Email can\'t be empty' : null,
@@ -174,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                       autocorrect: true,
                       expands: false,
                       readOnly: false,
-                      autovalidate: false,
+                      autovalidateMode: AutovalidateMode.disabled,
                       onSaved: (value) => _password = value,
 
                       style: TextStyle(

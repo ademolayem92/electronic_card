@@ -49,7 +49,7 @@ class _SignUpState extends State<SignUp> {
     if (validateAndSave()) {
       try {
         if (_formType == FormType.register) {
-          String userId = await widget.auth.signUp(_email, _password);
+          UserCredential userId = await widget.auth.signUp(_email, _password);
           print('Registered user: $userId');
           await auth.checkActionCode(code);
           await auth.applyActionCode(code);

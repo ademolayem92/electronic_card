@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class BaseAuth {
-  signInWithEmailAndPassword(String email, String password);
-  signUp(String email, String password);
+  Future<dynamic> signInWithEmailAndPassword(String email, String password);
+  Future<dynamic> signUp(String email, String password);
   currentUser();
   Future<void> signOut();
 }
@@ -13,7 +13,8 @@ class Auth implements BaseAuth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User user = FirebaseAuth.instance.currentUser;
 
-  signInWithEmailAndPassword(String email, String password) async {
+  Future<dynamic> signInWithEmailAndPassword(
+      String email, String password) async {
     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     _auth.authStateChanges().listen((User user) {
@@ -27,7 +28,7 @@ class Auth implements BaseAuth {
     return userCredential;
   }
 
-  signUp(String email, String password) async {
+  Future<dynamic> signUp(String email, String password) async {
     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,

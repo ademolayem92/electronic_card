@@ -1,4 +1,5 @@
 //import 'package:firebase_auth/firebase_auth.dart';
+import 'package:electronic_card/Home_Page.dart';
 import 'package:flutter/material.dart';
 
 import 'Login_page.dart';
@@ -23,7 +24,8 @@ class _RootPageState extends State<RootPage> {
     super.initState();
     widget.auth.currentUser().then((userId) {
       setState(() {
-        //authStatus = userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
+        authStatus =
+            userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
       });
     });
   }
@@ -31,6 +33,12 @@ class _RootPageState extends State<RootPage> {
   void _signedIn() {
     setState(() {
       authStatus = AuthStatus.signedIn;
+    });
+  }
+
+  void _signedOut() {
+    setState(() {
+      authStatus = AuthStatus.notSignedIn;
     });
   }
 
@@ -43,10 +51,9 @@ class _RootPageState extends State<RootPage> {
           onSignedIn: _signedIn,
         );
       case AuthStatus.signedIn:
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Welcome'),
-          ),
+        return HomePage(
+          auth: widget.auth,
+          onSignedOut: _signedOut,
         );
     }
     return null;

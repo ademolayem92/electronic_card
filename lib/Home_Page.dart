@@ -21,7 +21,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Home${user.email}'),
+          title: Center(child: Text('Welcome')),
           actions: <Widget>[
             FlatButton(
               onPressed: _logout,
