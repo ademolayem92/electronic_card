@@ -1,3 +1,4 @@
+import 'package:electronic_card/auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,6 @@ class _SignUpState extends State<SignUp> {
   final formKey = GlobalKey<FormState>();
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  String code = '*******';
   String _email;
   String _password;
   FormType _formType = FormType.register;
@@ -45,28 +45,24 @@ class _SignUpState extends State<SignUp> {
     return false;
   }
 
-  void validateAndSubmit() async {
+  void validateAndSaveIt() async {
     if (validateAndSave()) {
       try {
+        var auth = AuthProvider.of(context).auth;
         if (_formType == FormType.register) {
-          UserCredential userId = await widget.auth.signUp(_email, _password);
-          print('Registered user: $userId');
-          await auth.checkActionCode(code);
-          await auth.applyActionCode(code);
+          String user = await auth.signUp(_email, _password);
+          print('Registered user: $user');
         }
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
-          print('No user found for that email.');
-        } else if (e.code == 'wrong-password') {
-          print('Wrong password provided for that user.');
+        if (e.code == 'weak-password') {
+          print('The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          print('The account already exists for that email.');
         }
+      } catch (e) {
+        print(e);
       }
     }
-  }
-
-  Future navigateLoginPage(context) async {
-    Navigator.pop(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
   Future navigateToLoginPage(context) async {
@@ -265,10 +261,7 @@ class _SignUpState extends State<SignUp> {
                 child: RaisedButton(
                   color: Colors.blue,
                   onPressed: () {
-                    if (validateAndSubmit != null) {
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text('Processing Data')));
-                    }
+                    validateAndSaveIt();
                   },
                   child: Text(
                     'Create Account',

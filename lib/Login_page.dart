@@ -1,16 +1,15 @@
 import 'dart:core';
 
+import 'package:electronic_card/auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'SignUp.dart';
-import 'auth.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({this.auth, this.onSignedIn});
-  final BaseAuth auth;
+  LoginPage({this.onSignedIn});
   final VoidCallback onSignedIn;
   //final User user;
   @override
@@ -58,12 +57,13 @@ class _LoginPageState extends State<LoginPage> {
   void validateAndSubmit() async {
     if (validateAndSave()) {
       try {
+        var auth = AuthProvider.of(context).auth;
         if (_formType == FormType.login) {
-          UserCredential userId =
-              await widget.auth.signInWithEmailAndPassword(_email, _password);
+          String user =
+              await auth.signInWithEmailAndPassword(_email, _password);
           //Navigator.push(context,
           // MaterialPageRoute(builder: (context) => HomePage(user: user)));
-          print('Signed in: $userId');
+          print('Signed in: $user');
         }
         widget.onSignedIn();
       } on FirebaseAuthException catch (e) {

@@ -1,28 +1,24 @@
-//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:electronic_card/Home_Page.dart';
+import 'package:electronic_card/auth_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'Login_page.dart';
-import 'auth.dart';
 
 class RootPage extends StatefulWidget {
-  RootPage({
-    this.auth,
-  });
-  final BaseAuth auth;
-
   @override
   _RootPageState createState() => _RootPageState();
 }
 
-enum AuthStatus { notSignedIn, signedIn }
+enum AuthStatus { notDetermined, notSignedIn, signedIn }
 
 class _RootPageState extends State<RootPage> {
-  AuthStatus authStatus = AuthStatus.notSignedIn;
+  AuthStatus authStatus = AuthStatus.notDetermined;
+
   @override
-  initState() {
-    super.initState();
-    widget.auth.currentUser().then((userId) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    var auth = AuthProvider.of(context).auth;
+    auth.currentUser().then((userId) {
       setState(() {
         authStatus =
             userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
@@ -45,17 +41,26 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     switch (authStatus) {
+      case AuthStatus.notDetermined:
+        return _buildWaitingScreen();
       case AuthStatus.notSignedIn:
         return LoginPage(
-          auth: widget.auth,
           onSignedIn: _signedIn,
         );
       case AuthStatus.signedIn:
         return HomePage(
-          auth: widget.auth,
           onSignedOut: _signedOut,
         );
     }
     return null;
+  }
+
+  Widget _buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 }
