@@ -1,4 +1,7 @@
+import 'dart:core';
+
 import 'package:electronic_card/auth_provider.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -85,19 +88,11 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  String validateEmail(String value) {
-    Pattern pattern =
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
-    print(value);
-    if (value.isEmpty) {
-      return 'Please enter email';
-    } else {
-      if (!regex.hasMatch(value))
-        return 'enter valid email';
-      else
-        return null;
-    }
+  dynamic validateEmail(string, value) {
+    const String email = 'fredrik.eilertsen@gail.com';
+    final bool isValid = EmailValidator.validate(email);
+
+    print('Email is valid? ' + (isValid ? 'yes' : 'no'));
   }
 
   @override
@@ -185,7 +180,7 @@ class _SignUpState extends State<SignUp> {
                       child: TextFormField(
                         focusNode: _focusNode2,
                         controller: _controller2,
-                        validator: validateEmail,
+                        validator: validateEmail(String, _email),
                         onSaved: (value) => value,
                         decoration: InputDecoration(
                           hintText: 'Email',

@@ -5,26 +5,58 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:electronic_card/Login_page.dart';
+import 'package:electronic_card/auth.dart';
+import 'package:electronic_card/auth_provider.dart';
+//import 'package:electronic_card/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:electronic_card/main.dart';
+class MockAuth implements BaseAuth {
+  bool didAttemptSignIn;
+  @override
+  Future<String> currentUser() {
+    // TODO: implement currentUser
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> signInWithEmailAndPassword(email, password) {
+    // TODO: implement signInWithEmailAndPassword
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> signOut() {
+    // TODO: implement signOut
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> signUp(email, password) {
+    // TODO: implement signUp
+    throw UnimplementedError();
+  }
+}
 
 void main() {
+  Widget makeTestableWidget({Widget child, BaseAuth auth}) {
+    return AuthProvider(
+      auth: Auth(),
+      child: MaterialApp(
+        home: child,
+      ),
+    );
+  }
+
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    // Build our app and trigger a frame.'
+    MockAuth auth = MockAuth();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    LoginPage page = LoginPage(onSignedIn: () {});
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pumpWidget(makeTestableWidget(child: page, auth: auth));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    //expect signInWithEmailAndPassword
   });
 }
